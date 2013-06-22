@@ -9,17 +9,17 @@ type Authorizer interface {
 }
 
 type BasicAuth struct {
-    username, password string
+    Username, Password string
 }
 
 func (b BasicAuth) Authorize(req *http.Request) {
-    req.SetBasicAuth(b.username, b.password)
+    req.SetBasicAuth(b.Username, b.Password)
 }
 
 type HeaderAuth struct {
-    auth string
+    Auth string
 }
 
 func (h HeaderAuth) Authorize(req *http.Request) {
-    req.Header.Set("Authorization", h.auth)
+    req.Header.Set("Authorization", h.Auth)
 }

@@ -17,11 +17,11 @@ type Consumer interface {
 }
 
 type Delimeter struct {
-    delim byte
+    Delim byte
 }
 
 func (d Delimeter) Consume(reader *bufio.Reader) ([]byte, error) {
-    b, err := reader.ReadBytes(d.delim)
+    b, err := reader.ReadBytes(d.Delim)
 
     if err != nil {
         return nil, err
