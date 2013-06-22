@@ -29,10 +29,10 @@ func main() {
     resp, err := client.Request(endpoint)
 
     if err != nil {
-        fmt.Println("We have an error: %s", err)
+        fmt.Printf("We have an error: %s\n", err)
         return
     }
 
-    fmt.Println("Our response: %s", resp)
+    fmt.Printf("Our response: %s\n", resp)
 }
 ```
