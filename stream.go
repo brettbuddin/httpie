@@ -23,7 +23,7 @@ type Stream struct {
     consumer    Consumer
 }
 
-func (s *Stream) Start() {
+func (s *Stream) Connect() {
     resp, err := s.connect()
     if err != nil {
         return
