@@ -4,6 +4,8 @@ import (
     "net/http"
 )
 
+// NewClient returns a Client. 
+// Provide `nil` if no auth is necessary.
 func NewClient(authorizer Authorizer) *Client {
     return &Client{
         authorizer: authorizer,
@@ -15,6 +17,7 @@ type Client struct {
     authorizer Authorizer
 }
 
+// Request makes a request and returns an HTTP response.
 func (c *Client) Request(end Endpoint) (*http.Response, error) {
     client := &http.Client{}
     req    := &http.Request{Header: http.Header{}}

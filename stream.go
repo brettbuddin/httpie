@@ -7,6 +7,7 @@ import (
     "errors"
 )
 
+// NewStream returns a Stream
 func NewStream(endpoint Endpoint, auth Authorizer, consumer Consumer) *Stream {
     return &Stream{
         endpoint:   endpoint,
@@ -23,6 +24,7 @@ type Stream struct {
     consumer    Consumer
 }
 
+// Connect starts the stream
 func (s *Stream) Connect() {
     resp, err := s.connect()
     if err != nil {
@@ -32,6 +34,8 @@ func (s *Stream) Connect() {
     s.consume(resp)
 }
 
+// Data returns a channel that chunks of the
+// feed will be communicated upon
 func (s *Stream) Data() (chan []byte) {
     return s.data
 }
