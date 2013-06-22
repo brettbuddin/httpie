@@ -5,6 +5,7 @@ import (
     "bufio"
     "fmt"
     "errors"
+    "time"
 )
 
 // NewStream returns a Stream
@@ -96,6 +97,7 @@ func (s *Stream) consume(resp *http.Response) {
 
             if err != nil {
                 resp.Body.Close()
+                time.Sleep(10 * time.Second)
 
                 if resp, err = s.connect(); err != nil {
                     s.errors <- err
