@@ -7,22 +7,13 @@ import (
     "errors"
 )
 
-func NewStream(endpoint Endpoint, auth Authorizer, consumer Consumer) (*Stream, error) {
-    s := &Stream{
+func NewStream(endpoint Endpoint, auth Authorizer, consumer Consumer) *Stream {
+    return &Stream{
         endpoint:   endpoint,
         authorizer: auth,
         consumer:   consumer,
         data:       make(chan []byte, 50),
     }
-
-    resp, err := s.connect()
-    if err != nil {
-        return nil, err
-    }
-
-    go s.consume(resp)
-
-    return s, nil
 }
 
 type Stream struct {
@@ -30,6 +21,15 @@ type Stream struct {
     endpoint    Endpoint
     authorizer  Authorizer
     consumer    Consumer
+}
+
+func (s *Stream) Start() {
+    resp, err := s.connect()
+    if err != nil {
+        return
+    }
+
+    s.consume(resp)
 }
 
 func (s *Stream) Data() (chan []byte) {
