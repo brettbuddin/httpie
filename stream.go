@@ -14,11 +14,15 @@ func NewStream(endpoint Endpoint, auth Authorizer, consumer Consumer) *Stream {
         authorizer: auth,
         consumer:   consumer,
         data:       make(chan []byte, 50),
+        errors:     make(chan error, 50),
+        stop:       make(chan bool, 1),
     }
 }
 
 type Stream struct {
     data        chan []byte
+    errors      chan error
+    stop        chan bool
     endpoint    Endpoint
     authorizer  Authorizer
     consumer    Consumer
@@ -28,6 +32,7 @@ type Stream struct {
 func (s *Stream) Connect() {
     resp, err := s.connect()
     if err != nil {
+        s.errors <- err
         return
     }
 
@@ -38,6 +43,17 @@ func (s *Stream) Connect() {
 // feed will be communicated upon
 func (s *Stream) Data() (chan []byte) {
     return s.data
+}
+
+// Errors returns a channel that stream errors
+// will be sent over
+func (s *Stream) Errors() (chan error) {
+    return s.errors
+}
+
+// Disconnect forcefully disconnects from the stream
+func (s *Stream) Disconnect() {
+    s.stop <- true
 }
 
 func (s *Stream) connect() (*http.Response, error) {
@@ -71,18 +87,25 @@ func (s *Stream) consume(resp *http.Response) {
     )
 
     for {
-        b, err = s.consumer.Consume(reader)
-
-        if err != nil {
+        select {
+        case <-s.stop:
             resp.Body.Close()
+            return
+        default:
+            b, err = s.consumer.Consume(reader)
 
-            if resp, err = s.connect(); err != nil {
-                continue
+            if err != nil {
+                resp.Body.Close()
+
+                if resp, err = s.connect(); err != nil {
+                    s.errors <- err
+                    continue
+                }
+
+                reader = bufio.NewReader(resp.Body)
             }
 
-            reader = bufio.NewReader(resp.Body)
+            s.data <- b
         }
-
-        s.data <- b
     }
 }
