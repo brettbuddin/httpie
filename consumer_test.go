@@ -18,7 +18,7 @@ var delimData = []string{
 
 func TestDelim(t *testing.T) {
     data  := []byte(strings.Join(delimData, "\n") + "\n")
-    delim := Delimeter{'\n'}
+    delim := NewLine
 
     reader := bufio.NewReader(bytes.NewBuffer(data))
 
