@@ -22,12 +22,12 @@ func TestDelim(t *testing.T) {
 
     reader := bufio.NewReader(bytes.NewBuffer(data))
 
-    out := []string{}
+    out := [][]byte{}
     for _, seg := range delimData {
         b, _ := delim.Consume(reader)
 
         if string(b) == seg {
-            out = append(out, string(b))
+            out = append(out, b)
         }
     }
 
