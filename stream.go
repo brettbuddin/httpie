@@ -91,6 +91,8 @@ func (s *Stream) consume(resp *http.Response) {
         select {
         case <-s.stop:
             resp.Body.Close()
+            close(s.errors)
+            close(s.data)
             return
         default:
             b, err = s.consumer.Consume(reader)
