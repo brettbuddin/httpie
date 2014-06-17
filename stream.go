@@ -16,7 +16,7 @@ func NewStream(endpoint Endpoint, auth Authorizer, consumer Consumer) *Stream {
         consumer:   consumer,
         data:       make(chan []byte, 50),
         errors:     make(chan error, 50),
-        stop:       make(chan bool, 1),
+        stop:       make(chan bool),
     }
 }
 
@@ -91,6 +91,7 @@ func (s *Stream) consume(resp *http.Response) {
         select {
         case <-s.stop:
             resp.Body.Close()
+			close(s.stop)
             close(s.errors)
             close(s.data)
             return
